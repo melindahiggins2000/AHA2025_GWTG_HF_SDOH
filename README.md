@@ -4,5 +4,5 @@
 AHA April 2025 (summer) - GWTG-HF-SDOH
 by Melinda Higgins
 
-[April 2025 Proposal](https://melindahiggins2000.github.io/AHA2025_GWTG_HF_SDOH/MKHiggins_GWTG_HFSDOH_Jan2025_Proposal.html)
+[April 2025 Proposal](https://melindahiggins2000.github.io/AHA2025_GWTG_HF_SDOH/MelindaHiggins_GWTG_HFSDOH_April2025_Proposal.html)
 
