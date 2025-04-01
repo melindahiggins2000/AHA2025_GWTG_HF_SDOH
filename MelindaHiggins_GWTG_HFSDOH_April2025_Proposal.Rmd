@@ -111,7 +111,7 @@ As part of the initial data cleaning and selection process, all duplicate record
 
 * STEP 1: Read in GWTG-HF Full Dataset with Linked SDOH measures
 
-```
+```{r echo=TRUE,eval=FALSE}
 # download GWTG-HF Full Database with linked SDOH variables
 df_mainVars = read_data(
   database_name='gwtg-hf-sdoh-db',
@@ -121,7 +121,7 @@ df_mainVars = read_data(
 
 * STEP 2: Select HFpEF - Given that our focus is on HFpEF, we first filter out these patients
 
-```
+```{r echo=TRUE,eval=FALSE}
 # keep only those wth preserved EF
 df_mainVars_hfpef <- df_mainVars %>%
   filter(lvef == 3)
@@ -129,7 +129,7 @@ df_mainVars_hfpef <- df_mainVars %>%
 
 * STEP 3: Remove duplicate records - while minimized, some records were duplicated and these need to be removed first
 
-```
+```{r echo=TRUE,eval=FALSE}
 # convert admission dates to date format
 df_mainVars_hfpef$admdti.date <-
   as.Date(df_mainVars_hfpef$admdti,
@@ -145,7 +145,7 @@ df_mainVars_hfpef_unircrd <- df_mainVars_hfpef %>%
 
 * STEP 4: For our initial analyses, we will focus on the first recorded admissions for each patient. Unique patients are identified using `patient_display_id` and `facility_display_id` fields in the database. _If we have time at the end of the funding period, we may explore readmission models for patients with more than one recorded admission in the database._
 
-```
+```{r echo=TRUE,eval=FALSE}
 # merge patient IDs and facility IDs
 df_mainVars_hfpef_unircrd$ptfacid <- 
   paste(df_mainVars_hfpef_unircrd$patient_display_id,
@@ -171,7 +171,8 @@ Given this workflow, the final set of records for our planned analyses is 848,73
 The following variables will be included for computing the outcomes to be modeled in our analyses:
 
 * OUTCOME 1: Discharge Status - either death or discharged to hospice [`dschstati`]
-```
+
+```{r echo=TRUE,eval=FALSE}
 df_mainVars_hfpef_unircrd.pt1$dschstati.DH <- ifelse(
   (as.numeric(df_mainVars_hfpef_unircrd.pt1$dschstati) == 2) |
     (as.numeric(df_mainVars_hfpef_unircrd.pt1$dschstati) == 3) |
@@ -179,8 +180,10 @@ df_mainVars_hfpef_unircrd.pt1$dschstati.DH <- ifelse(
   1, 0
 )
 ```
+
 * OUTCOME 2: Prescribed SGLT2 [`sglt2i_disc`]
-```
+
+```{r echo=TRUE,eval=FALSE}
 # get numbers
 df_mainVars_hfpef_unircrd.pt1.2019$sglt2i_disc.num <-
   as.numeric(df_mainVars_hfpef_unircrd.pt1.2019$sglt2i_disc)
@@ -195,6 +198,7 @@ df_mainVars_hfpef_unircrd.pt1.2019 <-
     is.na(sglt2i_disc.num) ~ 0,
   ))
 ```
+
 * OUTCOME 3: modified-EFFECT score from ARIC Trial will include these variables to compute 28-day mortality and 1-year mortality risk `r citep("10.1161/CIRCHEARTFAILURE.117.003992")`
     - `agei` (age in years)
     - `sbpi` (systolic blood pressure in mmHg)
@@ -289,7 +293,7 @@ Prevalence = P(DeathHospice) = probability of death or discharged to hospice
 
 $$P(DeathHospice) = \frac{e^{\beta_0(t)}}{1 + e^{\beta_0(t)}}$$
 
-```
+```{r echo=TRUE,eval=FALSE}
 # fit intercept-only TVEM
 model_tvem <-
   tvem(data = df_mainVars_hfpef_unircrd.pt1.2019,
@@ -327,7 +331,7 @@ As noted above we can convert the odds ratios to prevalence as:
 
 $$P(DeathHospice) = \frac{e^{\beta_0(t) + \beta_1(t)X_i}}{1 + e^{\beta_0(t) + \beta_1(t)X_i}}$$
 
-```
+```{r echo=TRUE,eval=FALSE}
 model_tvem <-
   tvem(data = dat1,
        formula = dschstati.DH ~ racei.wnw,
@@ -343,7 +347,7 @@ This TVEM model estimates show that the prevalence of death or discharge to hosp
 
 #### Model 1c: Prevalence of death or discharge associated with patient gender varying by median neighborhood income levels
 
-```
+```{r echo=TRUE,eval=FALSE}
 model_tvem <-
   tvem(data = dat1,
        formula = dschstati.DH ~ genderi.num,
